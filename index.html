@@ -1,14 +1,24 @@
 <html>
 
 <head>
+  <link rel="stylesheet" type="text/css" href="interface.css">
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.3.15/Bacon.min.js"> </script>
-  <img id="POL" src="http://s33.postimg.org/kombahb0f/Planets.png" alt="Planet O' Life" style="display: none;">
+  <img id="POL" src="http://i.imgur.com/PzqPIG8.png" alt="Planet O' Life" style="display: none;">
 </head>
 
-<body style="background: black;">
+<body>
   <canvas id="screen"></canvas>
-  <button id="reset">Clear</button>
+  <div .controls>
+    <button id="reset">Reset</button>
+    <button id="pause">Pause</button>
+    <button id="slower">Slower</button>
+    <p id="speed"></p>
+    <p>x</p>
+    <button id="faster">Faster</button>
+  </div>
+  <script src="util.js"></script>
+  <script src="phys.js"></script>
   <script src="main.js"></script>
 </body>
 

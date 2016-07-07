@@ -36,7 +36,7 @@
 
   clicksRaw = $('#screen').asEventStream('click');
 
-  reset = $('#reset').asEventStream('click').map('reset');
+  reset = $('#reset').asEventStream('click').map('r');
 
   pause = $('#pause').asEventStream('click');
 
@@ -46,7 +46,9 @@
 
   speedInput = slower.merge(faster);
 
-  input = clicksRaw.merge(reset);
+  input = new Bacon.Bus();
+
+  input.plug(clicksRaw.merge(reset));
 
   resize.onValue(Util.sizeCanvas);
 
@@ -61,8 +63,15 @@
   };
 
   objs = input.scan(initState(), function(a, e) {
-    if (e === 'reset') {
-      return initState();
+    if (typeof e === 'string') {
+      if (e.slice(0, 2) === 'd ') {
+        return a.filter(function(x) {
+          return x.UUID !== e.slice(2);
+        });
+      }
+      if (e === 'r') {
+        return initState();
+      }
     } else {
       return a.concat(new Phys.Celestial(e.offsetX * scale, e.offsetY * scale));
     }
@@ -99,15 +108,23 @@
   Util.sizeCanvas();
 
   objs.sample(Util.ticksToMilliseconds(fps)).onValue(function(model) {
-    var i, len, planet, results;
+    var i, j, k, len, len1, len2, planet, results;
     clear();
-    results = [];
     for (i = 0, len = model.length; i < len; i++) {
       planet = model[i];
-      console.log(Phys.checkCollisions(planet, model));
       if (!paused) {
         update(planet, model);
       }
+    }
+    for (j = 0, len1 = model.length; j < len1; j++) {
+      planet = model[j];
+      if (Phys.checkCollisions(planet, model).length > 0) {
+        input.push('d ' + planet.UUID);
+      }
+    }
+    results = [];
+    for (k = 0, len2 = model.length; k < len2; k++) {
+      planet = model[k];
       results.push(draw(planet));
     }
     return results;

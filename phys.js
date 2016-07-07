@@ -5,6 +5,7 @@
   Phys.G = 6.67e-11;
 
   Phys.Celestial = function(x, y) {
+    this.UUID = Util.UUID();
     this.X = x;
     this.Y = y;
     this.V = new Util.Vector2(0, 0);

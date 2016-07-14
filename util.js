@@ -5,11 +5,11 @@
   Util.Vector2 = function(x, y) {
     this.X = x;
     this.Y = y;
-    this.add = function(v) {
-      return new Util.Vector2(this.X + v.X, this.Y + v.Y);
+    this.add = function(vector) {
+      return new Util.Vector2(this.X + vector.X, this.Y + vector.Y);
     };
-    this.scalar = function(s) {
-      return new Util.Vector2(this.X * s, this.Y * s);
+    this.multiply = function(scalar) {
+      return new Util.Vector2(this.X * scalar, this.Y * scalar);
     };
     return this;
   };
@@ -32,7 +32,15 @@
     canvas.style.width = '100%';
     canvas.style.height = '90%';
     canvas.width = canvas.offsetWidth;
-    return canvas.height = canvas.offsetHeight;
+    canvas.height = canvas.offsetHeight;
+    return new Util.Vector2(canvas.width, canvas.height);
+  };
+
+  Util.clear = function() {
+    var canvas, canvasContext;
+    canvas = $('#screen')[0];
+    canvasContext = canvas.getContext('2d');
+    return canvasContext.clearRect(0, 0, canvas.width, canvas.height);
   };
 
 }).call(this);

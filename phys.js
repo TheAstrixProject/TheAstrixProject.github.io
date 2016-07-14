@@ -4,54 +4,56 @@
 
   Phys.G = 6.67e-11;
 
-  Phys.Celestial = function(x, y) {
+  Phys.Celestial = function(xCoord, yCoord) {
     this.UUID = Util.UUID();
-    this.X = x;
-    this.Y = y;
-    this.V = new Util.Vector2(0, 0);
-    this.M = 5.972e24;
-    this.R = 6.371e6;
-    this.distanceTo = function(p) {
-      var r;
-      x = this.X - p.X;
-      y = this.Y - p.Y;
-      r = Math.sqrt(x * x + y * y);
-      return r;
+    this.xCoord = xCoord;
+    this.yCoord = yCoord;
+    this.velocity = new Util.Vector2(0, 0);
+    this.mass = 5.972e24;
+    this.radius = 6.371e6;
+    this.distanceTo = function(object) {
+      var distance, xDistance, yDistance;
+      xDistance = this.xCoord - object.xCoord;
+      yDistance = this.yCoord - object.yCoord;
+      distance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+      return distance;
     };
-    this.gVectorTo = function(p) {
-      var g, gVector, r, theta;
-      r = this.distanceTo(p);
-      g = (Phys.G * p.M) / (r * r);
-      theta = Math.atan2(y, x);
-      gVector = new Util.Vector2(Math.cos(theta) * g, Math.sin(theta) * g);
-      return gVector;
+    this.gravityVectorTo = function(object) {
+      var distance, gravity, gravityVector, theta, xDistance, yDistance;
+      xDistance = this.xCoord - object.xCoord;
+      yDistance = this.yCoord - object.yCoord;
+      distance = this.distanceTo(object);
+      gravity = (Phys.G * object.mass) / (Math.pow(distance, 2));
+      theta = Math.atan2(yDistance, xDistance);
+      gravityVector = new Util.Vector2(Math.cos(theta) * gravity, Math.sin(theta) * gravity);
+      return gravityVector;
     };
     return this;
   };
 
-  Phys.totalGravityVector = function(p, arr) {
-    var ps, tgv, vs;
-    ps = arr.filter(function(x) {
-      return x !== p;
+  Phys.totalGravityVector = function(object, allObjects) {
+    var gravities, otherObjects, totalGravity;
+    otherObjects = allObjects.filter(function(obj) {
+      return obj !== object;
     });
-    vs = ps.map(function(x) {
-      return p.gVectorTo(x);
+    gravities = otherObjects.map(function(otherObject) {
+      return object.gravityVectorTo(otherObject);
     });
-    tgv = vs.reduce((function(a, v) {
-      return a.add(v);
+    totalGravity = gravities.reduce((function(totalVector, vector) {
+      return totalVector.add(vector);
     }), new Util.Vector2(0, 0));
-    return tgv;
+    return totalGravity;
   };
 
-  Phys.checkCollisions = function(p, arr) {
-    var cs, ps;
-    ps = arr.filter(function(x) {
-      return x !== p;
+  Phys.checkCollisions = function(object, allObjects) {
+    var collisions, otherObjects;
+    otherObjects = allObjects.filter(function(obj) {
+      return obj !== object;
     });
-    cs = ps.filter(function(x) {
-      return x.distanceTo(p) <= x.R + p.R;
+    collisions = otherObjects.filter(function(otherObject) {
+      return object.distanceTo(otherObject) <= object.radius + otherObject.radius;
     });
-    return cs;
+    return collisions;
   };
 
 }).call(this);

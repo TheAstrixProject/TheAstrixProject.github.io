@@ -80,6 +80,8 @@
         lastView = viewPort;
         lastClick = new Util.Vector2(event.offsetX, event.offsetY);
         return model;
+      } else {
+        return model;
       }
     }
     if (event.type === 'mouseup' || event.type === 'mousemove') {
